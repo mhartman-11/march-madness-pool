@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "app/api/scores/route.js": {
+      "maxDuration": 60
+    }
+  }
+}

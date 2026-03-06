@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2025 March Madness Player Pool — Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #030712; color: #f3f4f6; }
+  .header { background: #111827; border-bottom: 1px solid #1f2937; padding: 16px; }
+  .header h1 { font-size: 1.35rem; color: #fb923c; }
+  .header .sub { font-size: 0.8rem; color: #9ca3af; margin-top: 4px; }
+  .max-w { max-width: 900px; margin: 0 auto; }
+  .tabs { background: #111827; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 10; }
+  .tabs button { padding: 12px 16px; font-size: 0.875rem; font-weight: 500; background: none; border: none; color: #9ca3af; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tabs button.active { color: #fb923c; border-bottom-color: #fb923c; }
+  .tabs button:hover { color: #e5e7eb; }
+  .content { padding: 16px; }
+  table { width: 100%; font-size: 0.875rem; border-collapse: collapse; }
+  th { text-align: left; color: #9ca3af; padding: 8px 12px; border-bottom: 1px solid #1f2937; font-weight: 500; }
+  th.r { text-align: right; }
+  td { padding: 10px 12px; border-bottom: 1px solid rgba(31,41,55,0.5); }
+  td.r { text-align: right; }
+  .rank { font-family: monospace; color: #6b7280; }
+  .name { font-weight: 600; }
+  .pts { font-weight: 700; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+  .gold { background: rgba(161,98,7,0.12); }
+  .silver { background: rgba(107,114,128,0.1); }
+  .bronze { background: rgba(180,83,9,0.06); }
+  .green { color: #4ade80; }
+  .gray { color: #6b7280; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .card { background: #111827; border: 1px solid #1f2937; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; cursor: pointer; }
+  .card-header:hover { background: rgba(31,41,55,0.5); }
+  .card-header .left { display: flex; align-items: center; gap: 10px; }
+  .card-header .rank-sm { font-size: 0.75rem; font-family: monospace; color: #6b7280; width: 22px; }
+  .card-header .owner-name { font-weight: 600; }
+  .card-header .owner-pts { color: #fb923c; font-weight: 700; }
+  .card-body { border-top: 1px solid #1f2937; display: none; }
+  .card.open .card-body { display: block; }
+  .arrow { color: #6b7280; transition: transform 0.2s; font-size: 0.75rem; }
+  .card.open .arrow { transform: rotate(180deg); }
+  .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; }
+  .badge-out { color: rgba(248,113,113,0.8); background: rgba(127,29,29,0.2); }
+  .badge-active { color: rgba(74,222,128,0.8); background: rgba(20,83,45,0.2); }
+  .pick { font-size: 0.7rem; color: #4b5563; }
+  .team-col { color: #9ca3af; font-size: 0.75rem; }
+  select { background: #1f2937; border: 1px solid #374151; color: #e5e7eb; padding: 8px 12px; border-radius: 6px; font-size: 0.875rem; margin-bottom: 16px; }
+  .small { font-size: 0.75rem; color: #6b7280; }
+  @media (max-width: 640px) {
+    .hide-mobile { display: none; }
+    .mobile-sub { font-size: 0.7rem; color: #6b7280; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="max-w">
+    <h1>2025 March Madness Player Pool</h1>
+    <div class="sub">Last updated: Preview Mode — using spreadsheet data</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="max-w">
+    <button class="active" onclick="showTab('standings', this)">Standings</button>
+    <button onclick="showTab('rosters', this)">Team Rosters</button>
+    <button onclick="showTab('gamelog', this)">Game Log</button>
+  </div>
+</div>
+
+<div class="content">
+<div class="max-w">
+
+<!-- TAB 1: STANDINGS -->
+<div id="standings" class="tab-content active">
+<table>
+  <thead>
+    <tr><th style="width:40px">#</th><th>Owner</th><th class="r">Points</th><th class="r hide-mobile">Remaining</th><th class="r hide-mobile">Avg PPG</th></tr>
+  </thead>
+  <tbody id="standings-body"></tbody>
+</table>
+</div>
+
+<!-- TAB 2: ROSTERS -->
+<div id="rosters" class="tab-content"></div>
+
+<!-- TAB 3: GAME LOG -->
+<div id="gamelog" class="tab-content">
+  <select id="owner-filter" onchange="renderGameLog()">
+    <option value="all">All Owners</option>
+  </select>
+  <table>
+    <thead>
+      <tr><th>Player</th><th class="hide-mobile">Owner</th><th>Round</th><th class="hide-mobile">Opponent</th><th class="r">Pts</th></tr>
+    </thead>
+    <tbody id="gamelog-body"></tbody>
+  </table>
+</div>
+
+</div>
+</div>
+
+<script>
+// --- DATA FROM SPREADSHEET ---
+const owners = [
+  { name:"McDaniel", totalPoints:494, playersRemaining:0, totalGames:26, avgPPG:"19.00", rank:1, players:[
+    {name:"Darrion Williams",pick:41,team:"Texas Tech",totalPoints:84,gamesPlayed:4,eliminated:true},
+    {name:"Mark Sears",pick:4,team:"Alabama",totalPoints:74,gamesPlayed:4,eliminated:true},
+    {name:"Sean Pedulla",pick:63,team:"Clemson",totalPoints:64,gamesPlayed:3,eliminated:true},
+    {name:"Derik Queen",pick:26,team:"Maryland",totalPoints:56,gamesPlayed:3,eliminated:true},
+    {name:"Otega Oweh",pick:19,team:"Kentucky",totalPoints:48,gamesPlayed:3,eliminated:true},
+    {name:"Jackson Shelstad",pick:70,team:"Oregon",totalPoints:42,gamesPlayed:2,eliminated:true},
+    {name:"David Joplin",pick:114,team:"Wisconsin",totalPoints:28,gamesPlayed:1,eliminated:true},
+    {name:"John Poulakidas",pick:92,team:"Northwestern",totalPoints:23,gamesPlayed:1,eliminated:true},
+    {name:"Chucky Hepburn",pick:85,team:"Louisville",totalPoints:22,gamesPlayed:1,eliminated:true},
+    {name:"Chase Hunter",pick:48,team:"Clemson",totalPoints:21,gamesPlayed:1,eliminated:true},
+    {name:"Jeremiah Fears",pick:107,team:"Oklahoma",totalPoints:20,gamesPlayed:1,eliminated:true},
+  ]},
+  { name:"Schutt", totalPoints:493, playersRemaining:0, totalGames:38, avgPPG:"12.97", rank:2, players:[
+    {name:"Cooper Flagg",pick:2,team:"Duke",totalPoints:105,gamesPlayed:5,eliminated:true},
+    {name:"Jordan Gainey",pick:24,team:"Tennessee",totalPoints:53,gamesPlayed:4,eliminated:true},
+    {name:"Khaman Maluach",pick:65,team:"Duke",totalPoints:52,gamesPlayed:5,eliminated:true},
+    {name:"Jase Richardson",pick:21,team:"Michigan State",totalPoints:52,gamesPlayed:4,eliminated:true},
+    {name:"Koby Brea",pick:46,team:"Kentucky",totalPoints:41,gamesPlayed:3,eliminated:true},
+    {name:"Tre Holloman",pick:68,team:"Michigan State",totalPoints:40,gamesPlayed:4,eliminated:true},
+    {name:"Kylan Boswell",pick:109,team:"Arizona",totalPoints:38,gamesPlayed:2,eliminated:true},
+    {name:"Labaron Philon",pick:43,team:"Alabama",totalPoints:31,gamesPlayed:4,eliminated:true},
+    {name:"Will Riley",pick:87,team:"Illinois",totalPoints:27,gamesPlayed:2,eliminated:true},
+    {name:"Augustas Marciulionis",pick:90,team:"Kansas",totalPoints:25,gamesPlayed:2,eliminated:true},
+    {name:"Jacob Ognacevic",pick:112,team:"Oakland",totalPoints:18,gamesPlayed:1,eliminated:true},
+  ]},
+  { name:"Jeremy", totalPoints:475, playersRemaining:1, totalGames:34, avgPPG:"13.97", rank:3, players:[
+    {name:"L.J. Cryer",pick:5,team:"Houston",totalPoints:112,gamesPlayed:6,eliminated:false},
+    {name:"Richie Saunders",pick:40,team:"Kentucky",totalPoints:66,gamesPlayed:3,eliminated:true},
+    {name:"Jaden Akins",pick:27,team:"Michigan State",totalPoints:55,gamesPlayed:4,eliminated:true},
+    {name:"Miles Kelly",pick:18,team:"Auburn",totalPoints:49,gamesPlayed:5,eliminated:true},
+    {name:"Bennett Stirtz",pick:49,team:"Drake",totalPoints:42,gamesPlayed:2,eliminated:true},
+    {name:"Grant Nelson",pick:71,team:"Alabama",totalPoints:33,gamesPlayed:4,eliminated:true},
+    {name:"Liam McNeeley",pick:62,team:"UConn",totalPoints:30,gamesPlayed:2,eliminated:true},
+    {name:"Norchad Omier",pick:128,team:"Baylor",totalPoints:27,gamesPlayed:2,eliminated:true},
+    {name:"Solo Ball",pick:106,team:"USC",totalPoints:22,gamesPlayed:2,eliminated:true},
+    {name:"Daniel Abreu",pick:93,team:"High Point",totalPoints:19,gamesPlayed:2,eliminated:true},
+  ]},
+  { name:"Wojo", totalPoints:471, playersRemaining:1, totalGames:34, avgPPG:"13.85", rank:4, players:[
+    {name:"Chaz Lanier",pick:8,team:"Tennessee",totalPoints:83,gamesPlayed:4,eliminated:true},
+    {name:"Thomas Haugh",pick:37,team:"Houston",totalPoints:70,gamesPlayed:6,eliminated:false},
+    {name:"Trey Kaufman-Renn",pick:30,team:"Purdue",totalPoints:57,gamesPlayed:3,eliminated:true},
+    {name:"John Tonje",pick:15,team:"Wisconsin",totalPoints:52,gamesPlayed:2,eliminated:true},
+    {name:"Chris Youngblood",pick:74,team:"Clemson",totalPoints:49,gamesPlayed:4,eliminated:true},
+    {name:"Danny Wolf",pick:81,team:"Michigan",totalPoints:43,gamesPlayed:3,eliminated:true},
+    {name:"Kasparas Jakucionis",pick:59,team:"Illinois",totalPoints:29,gamesPlayed:2,eliminated:true},
+    {name:"Alex Karaban",pick:118,team:"UConn",totalPoints:27,gamesPlayed:2,eliminated:true},
+    {name:"Jaxon Kohler",pick:103,team:"Michigan State",totalPoints:25,gamesPlayed:4,eliminated:true},
+    {name:"Kam Jones",pick:52,team:"Marquette",totalPoints:15,gamesPlayed:1,eliminated:true},
+  ]},
+  { name:"Blake", totalPoints:468, playersRemaining:1, totalGames:29, avgPPG:"16.14", rank:5, players:[
+    {name:"Walter Clayton Jr.",pick:3,team:"Florida",totalPoints:134,gamesPlayed:6,eliminated:false},
+    {name:"Caleb Love",pick:25,team:"Arizona",totalPoints:74,gamesPlayed:3,eliminated:true},
+    {name:"Zakai Zeigler",pick:20,team:"Tennessee",totalPoints:50,gamesPlayed:4,eliminated:true},
+    {name:"Fletcher Loyer",pick:47,team:"Purdue",totalPoints:39,gamesPlayed:3,eliminated:true},
+    {name:"Steven Ashworth",pick:113,team:"Creighton",totalPoints:35,gamesPlayed:2,eliminated:true},
+    {name:"Donovan Dent",pick:69,team:"Arizona",totalPoints:35,gamesPlayed:2,eliminated:true},
+    {name:"Wade Taylor IV",pick:42,team:"Texas A&M",totalPoints:30,gamesPlayed:2,eliminated:true},
+    {name:"Terrence Edwards Jr.",pick:108,team:"VCU",totalPoints:21,gamesPlayed:1,eliminated:true},
+    {name:"Tamin Lipsey",pick:86,team:"Iowa State",totalPoints:17,gamesPlayed:2,eliminated:true},
+  ]},
+  { name:"Lee", totalPoints:443, playersRemaining:2, totalGames:38, avgPPG:"11.66", rank:6, players:[
+    {name:"Alijah Martin",pick:6,team:"Florida",totalPoints:83,gamesPlayed:6,eliminated:false},
+    {name:"Tahaad Pettiford",pick:28,team:"Auburn",totalPoints:76,gamesPlayed:5,eliminated:true},
+    {name:"Curtis Jones",pick:17,team:"Iowa State",totalPoints:43,gamesPlayed:2,eliminated:true},
+    {name:"Chaney Johnson",pick:72,team:"Auburn",totalPoints:39,gamesPlayed:5,eliminated:true},
+    {name:"Braden Smith",pick:39,team:"Purdue",totalPoints:37,gamesPlayed:3,eliminated:true},
+    {name:"Denzel Aberdeen",pick:83,team:"Florida",totalPoints:36,gamesPlayed:6,eliminated:false},
+    {name:"Ryan Kalkbrenner",pick:61,team:"Gonzaga",totalPoints:32,gamesPlayed:2,eliminated:true},
+    {name:"Lamont Butler",pick:50,team:"Kentucky",totalPoints:32,gamesPlayed:3,eliminated:true},
+    {name:"Tre Donaldson",pick:127,team:"Auburn",totalPoints:25,gamesPlayed:3,eliminated:true},
+    {name:"Asa Newell",pick:116,team:"Georgia",totalPoints:20,gamesPlayed:1,eliminated:true},
+    {name:"Jason Edwards",pick:94,team:"Georgia",totalPoints:18,gamesPlayed:1,eliminated:true},
+  ]},
+  { name:"Zach", totalPoints:424, playersRemaining:2, totalGames:33, avgPPG:"12.85", rank:7, players:[
+    {name:"Johni Broome",pick:1,team:"Auburn",totalPoints:84,gamesPlayed:5,eliminated:true},
+    {name:"Milos Uzan",pick:22,team:"Florida",totalPoints:64,gamesPlayed:6,eliminated:false},
+    {name:"Alex Condon",pick:23,team:"Florida",totalPoints:43,gamesPlayed:6,eliminated:false},
+    {name:"Khalif Battle",pick:110,team:"Louisville",totalPoints:41,gamesPlayed:2,eliminated:true},
+    {name:"Rodney Rice",pick:45,team:"Gonzaga",totalPoints:37,gamesPlayed:3,eliminated:true},
+    {name:"Nique Clifford",pick:66,team:"Colorado State",totalPoints:35,gamesPlayed:2,eliminated:true},
+    {name:"Joshua Jefferson",pick:44,team:"Purdue",totalPoints:26,gamesPlayed:2,eliminated:true},
+    {name:"Josh Hubbard",pick:89,team:"Mississippi State",totalPoints:26,gamesPlayed:1,eliminated:true},
+    {name:"Andrew Carr",pick:67,team:"Clemson",totalPoints:26,gamesPlayed:3,eliminated:true},
+    {name:"Zeke Mayo",pick:88,team:"Kansas",totalPoints:18,gamesPlayed:1,eliminated:true},
+    {name:"Nick Townsend",pick:132,team:"South Carolina",totalPoints:15,gamesPlayed:1,eliminated:true},
+  ]},
+  { name:"Koehler", totalPoints:403, playersRemaining:1, totalGames:34, avgPPG:"11.85", rank:8, players:[
+    {name:"Emanuel Sharp",pick:16,team:"Houston",totalPoints:77,gamesPlayed:6,eliminated:false},
+    {name:"Kon Knueppel",pick:7,team:"Duke",totalPoints:75,gamesPlayed:5,eliminated:true},
+    {name:"Denver Jones",pick:29,team:"Auburn",totalPoints:61,gamesPlayed:5,eliminated:true},
+    {name:"Jaden Bradley",pick:51,team:"Alabama",totalPoints:46,gamesPlayed:3,eliminated:true},
+    {name:"Tyler Bilodeau",pick:104,team:"Alabama",totalPoints:24,gamesPlayed:2,eliminated:true},
+    {name:"Deivon Smith",pick:60,team:"Cincinnati",totalPoints:21,gamesPlayed:2,eliminated:true},
+    {name:"Igor Milicic Jr.",pick:82,team:"Marquette",totalPoints:19,gamesPlayed:4,eliminated:true},
+    {name:"PJ Haggerty",pick:38,team:"Memphis",totalPoints:18,gamesPlayed:1,eliminated:true},
+    {name:"Nolan Hickman",pick:117,team:"Gonzaga",totalPoints:18,gamesPlayed:2,eliminated:true},
+    {name:"Tre White",pick:126,team:"VCU",totalPoints:15,gamesPlayed:2,eliminated:true},
+    {name:"RJ Davis",pick:95,team:"UNC",totalPoints:15,gamesPlayed:1,eliminated:true},
+  ]},
+  { name:"Webb", totalPoints:388, playersRemaining:0, totalGames:28, avgPPG:"13.86", rank:9, players:[
+    {name:"Vladislav Goldin",pick:58,team:"Michigan",totalPoints:47,gamesPlayed:3,eliminated:true},
+    {name:"Julian Reese",pick:53,team:"Maryland",totalPoints:45,gamesPlayed:3,eliminated:true},
+    {name:"Aden Holloway",pick:36,team:"Alabama",totalPoints:45,gamesPlayed:4,eliminated:true},
+    {name:"John Blackwell",pick:31,team:"Wisconsin",totalPoints:40,gamesPlayed:2,eliminated:true},
+    {name:"Tomislav Ivisic",pick:102,team:"Baylor",totalPoints:39,gamesPlayed:2,eliminated:true},
+    {name:"Matthew Murrell",pick:119,team:"Memphis",totalPoints:36,gamesPlayed:3,eliminated:true},
+    {name:"Zuby Ejiofor",pick:14,team:"Baylor",totalPoints:33,gamesPlayed:2,eliminated:true},
+    {name:"RJ Luis Jr.",pick:9,team:"St. John's",totalPoints:31,gamesPlayed:2,eliminated:true},
+    {name:"Nate Bittle",pick:80,team:"Oregon",totalPoints:30,gamesPlayed:2,eliminated:true},
+    {name:"Amari Williams",pick:75,team:"Kentucky",totalPoints:27,gamesPlayed:3,eliminated:true},
+  ]},
+  { name:"Myers", totalPoints:380, playersRemaining:2, totalGames:35, avgPPG:"10.86", rank:10, players:[
+    {name:"Tyrese Proctor",pick:13,team:"Duke",totalPoints:75,gamesPlayed:5,eliminated:true},
+    {name:"Will Richard",pick:10,team:"Florida",totalPoints:69,gamesPlayed:6,eliminated:false},
+    {name:"J'Wan Roberts",pick:32,team:"Houston",totalPoints:57,gamesPlayed:6,eliminated:false},
+    {name:"Christian Anderson",pick:57,team:"Utah",totalPoints:38,gamesPlayed:4,eliminated:true},
+    {name:"KJ Lewis",pick:79,team:"Arizona",totalPoints:28,gamesPlayed:3,eliminated:true},
+    {name:"Milan Momcilovic",pick:54,team:"Iowa State",totalPoints:25,gamesPlayed:2,eliminated:true},
+    {name:"Selton Miguel",pick:76,team:"Kansas State",totalPoints:24,gamesPlayed:3,eliminated:true},
+    {name:"Zeb Jackson",pick:123,team:"Virginia Tech",totalPoints:23,gamesPlayed:1,eliminated:true},
+    {name:"Kadary Richmond",pick:35,team:"St. John's",totalPoints:15,gamesPlayed:2,eliminated:true},
+  ]},
+  { name:"Kevin", totalPoints:347, playersRemaining:0, totalGames:35, avgPPG:"9.91", rank:11, players:[
+    {name:"JT Toppin",pick:12,team:"Texas Tech",totalPoints:77,gamesPlayed:4,eliminated:true},
+    {name:"Chad Baker-Mazara",pick:11,team:"Auburn",totalPoints:52,gamesPlayed:5,eliminated:true},
+    {name:"Ja'Kobi Gillespie",pick:34,team:"Auburn",totalPoints:44,gamesPlayed:3,eliminated:true},
+    {name:"Sion James",pick:55,team:"Auburn",totalPoints:40,gamesPlayed:5,eliminated:true},
+    {name:"Graham Ike",pick:78,team:"Gonzaga",totalPoints:40,gamesPlayed:2,eliminated:true},
+    {name:"Tyler McGhie",pick:121,team:"Bucknell",totalPoints:25,gamesPlayed:1,eliminated:true},
+    {name:"Dain Dainja",pick:77,team:"Baylor",totalPoints:22,gamesPlayed:1,eliminated:true},
+  ]},
+];
+
+// --- RENDER STANDINGS ---
+function renderStandings() {
+  const tbody = document.getElementById('standings-body');
+  tbody.innerHTML = owners.map((o, i) => {
+    const cls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    return `<tr class="${cls}">
+      <td class="rank">${o.rank}</td>
+      <td><div class="name">${o.name}</div><div class="mobile-sub hide-desktop">${o.playersRemaining} remaining | ${o.avgPPG} ppg</div></td>
+      <td class="r pts">${o.totalPoints}</td>
+      <td class="r hide-mobile"><span class="${o.playersRemaining > 0 ? 'green' : 'gray'}">${o.playersRemaining}</span></td>
+      <td class="r hide-mobile" style="font-variant-numeric:tabular-nums;color:#d1d5db">${o.avgPPG}</td>
+    </tr>`;
+  }).join('');
+}
+
+// --- RENDER ROSTERS ---
+function renderRosters() {
+  const container = document.getElementById('rosters');
+  container.innerHTML = owners.map(o => {
+    const rows = o.players.map(p => `
+      <tr>
+        <td style="padding:8px 16px">
+          <div>${p.name} <span class="pick">#${p.pick}</span></div>
+          <div class="small hide-desktop">${p.team}</div>
+        </td>
+        <td class="hide-mobile team-col">${p.team}</td>
+        <td class="r" style="font-weight:500;font-variant-numeric:tabular-nums">${p.totalPoints}</td>
+        <td class="r gray" style="font-variant-numeric:tabular-nums">${p.gamesPlayed}</td>
+        <td class="r">${p.eliminated
+          ? '<span class="badge badge-out">Out</span>'
+          : '<span class="badge badge-active">Active</span>'}</td>
+      </tr>`).join('');
+
+    return `<div class="card open" onclick="this.classList.toggle('open')">
+      <div class="card-header">
+        <div class="left">
+          <span class="rank-sm">#${o.rank}</span>
+          <span class="owner-name">${o.name}</span>
+          <span class="owner-pts">${o.totalPoints} pts</span>
+        </div>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead><tr>
+            <th style="padding-left:16px">Player</th>
+            <th class="hide-mobile">Team</th>
+            <th class="r">Pts</th>
+            <th class="r">GP</th>
+            <th class="r">Status</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// --- RENDER GAME LOG (simplified — no per-game data, shows totals) ---
+function renderGameLog() {
+  const filter = document.getElementById('owner-filter').value;
+  const allRows = [];
+  owners.forEach(o => {
+    o.players.forEach(p => {
+      if (filter === 'all' || filter === o.name) {
+        allRows.push({ player: p.name, owner: o.name, team: p.team, points: p.totalPoints, gp: p.gamesPlayed });
+      }
+    });
+  });
+  allRows.sort((a, b) => b.points - a.points);
+
+  const tbody = document.getElementById('gamelog-body');
+  tbody.innerHTML = allRows.map(r => `
+    <tr>
+      <td><div>${r.player}</div><div class="small hide-desktop">${r.owner}</div></td>
+      <td class="hide-mobile gray">${r.owner}</td>
+      <td class="small">${r.team}</td>
+      <td class="hide-mobile gray">${r.gp} games</td>
+      <td class="r" style="font-weight:600;font-variant-numeric:tabular-nums">${r.points}</td>
+    </tr>`).join('');
+}
+
+// --- TAB SWITCHING ---
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// --- INIT ---
+renderStandings();
+renderRosters();
+
+// Populate owner filter dropdown
+const sel = document.getElementById('owner-filter');
+owners.forEach(o => { const opt = document.createElement('option'); opt.value = o.name; opt.textContent = o.name; sel.appendChild(opt); });
+renderGameLog();
+</script>
+</body>
+</html>
