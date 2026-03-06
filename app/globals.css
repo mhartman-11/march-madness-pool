@@ -2,23 +2,171 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  --retro-bg: #1a1a2e;
+  --retro-bg2: #16213e;
+  --retro-panel: #0f3460;
+  --retro-border: #e94560;
+  --retro-gold: #f5c542;
+  --retro-green: #00ff41;
+  --retro-cyan: #00d4ff;
+  --retro-white: #e8e8e8;
+  --retro-gray: #7a7a9e;
+  --retro-red: #e94560;
+  --retro-purple: #9b59b6;
+  --retro-orange: #f39c12;
+  --retro-silver: #bdc3c7;
+  --retro-bronze: #cd7f32;
 }
 
-/* Scrollbar styling for dark theme */
+* {
+  image-rendering: pixelated;
+}
+
+body {
+  font-family: 'Press Start 2P', monospace;
+  background: var(--retro-bg);
+  color: var(--retro-white);
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  overflow-x: hidden;
+}
+
+/* Pixel border utility */
+.pixel-border {
+  border: 3px solid var(--retro-border);
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0,0,0,0.3),
+    inset 2px 2px 0 0 rgba(255,255,255,0.1),
+    4px 4px 0 0 rgba(0,0,0,0.5);
+}
+
+.pixel-border-gold {
+  border: 3px solid var(--retro-gold);
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0,0,0,0.3),
+    inset 2px 2px 0 0 rgba(255,255,255,0.1),
+    4px 4px 0 0 rgba(0,0,0,0.5);
+}
+
+/* Retro panel */
+.retro-panel {
+  background: var(--retro-panel);
+  border: 3px solid var(--retro-border);
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0,0,0,0.4),
+    inset 2px 2px 0 0 rgba(255,255,255,0.08),
+    6px 6px 0 0 rgba(0,0,0,0.6);
+}
+
+/* Scanline overlay */
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.08) 0px,
+    rgba(0, 0, 0, 0.08) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Blinking cursor effect */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Retro text glow */
+.text-glow {
+  text-shadow: 0 0 6px currentColor, 0 0 12px currentColor;
+}
+
+/* Tab selected arrow indicator */
+.tab-arrow::before {
+  content: '▶ ';
+  color: var(--retro-gold);
+}
+
+/* Pixel button hover */
+.pixel-btn {
+  transition: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.pixel-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0,0,0,0.3),
+    inset 2px 2px 0 0 rgba(255,255,255,0.1),
+    5px 5px 0 0 rgba(0,0,0,0.6);
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow:
+    inset 2px 2px 0 0 rgba(0,0,0,0.3),
+    inset -1px -1px 0 0 rgba(255,255,255,0.1),
+    1px 1px 0 0 rgba(0,0,0,0.6);
+}
+
+/* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--retro-bg);
+  border: 2px solid var(--retro-border);
 }
 ::-webkit-scrollbar-thumb {
-  background: #374151;
-  border-radius: 3px;
+  background: var(--retro-red);
+  border: 1px solid var(--retro-bg);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+
+/* Retro table rows */
+.retro-row:nth-child(even) {
+  background: rgba(15, 52, 96, 0.3);
+}
+.retro-row:hover {
+  background: rgba(233, 69, 96, 0.15);
+}
+
+/* Star twinkle for background */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Marquee-style text scroll */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* Float animation for rank badges */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.float-anim {
+  animation: float 2s ease-in-out infinite;
 }
