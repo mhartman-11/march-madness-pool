@@ -4,6 +4,38 @@ import { useState, useEffect, useCallback } from "react";
 import RetroBackground from "./RetroBackground";
 import { sfxSelect, sfxConfirm, sfxToggle } from "./retroSfx";
 
+function DraftBanner() {
+  const [draftStatus, setDraftStatus] = useState(null);
+
+  useEffect(() => {
+    async function checkDraft() {
+      try {
+        const res = await fetch("/api/draft/state");
+        const data = await res.json();
+        if (data.config?.status === "active" || data.config?.status === "ready") {
+          setDraftStatus(data.config.status);
+        }
+      } catch {}
+    }
+    checkDraft();
+  }, []);
+
+  if (!draftStatus) return null;
+
+  return (
+    <a
+      href="/draft"
+      className="block bg-[var(--retro-gold)]/10 border-b-2 border-[var(--retro-gold)] px-4 py-2 text-center hover:bg-[var(--retro-gold)]/20 transition-colors"
+    >
+      <span className="text-[8px] sm:text-[10px] text-[var(--retro-gold)] animate-pulse">
+        {draftStatus === "active"
+          ? "LIVE DRAFT IN PROGRESS  \u25B6\u25B6  CLICK TO ENTER DRAFT ROOM  \u25C0\u25C0"
+          : "DRAFT READY  \u25B6\u25B6  CLICK TO VIEW DRAFT BOARD  \u25C0\u25C0"}
+      </span>
+    </a>
+  );
+}
+
 const TABS = [
   { id: "standings", label: "STANDINGS" },
   { id: "rosters", label: "ROSTERS" },
@@ -94,6 +126,9 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Draft Banner */}
+        <DraftBanner />
 
         {/* Tab Bar */}
         <div className="bg-[var(--retro-bg2)]/90 backdrop-blur-sm border-b-2 border-[var(--retro-border)] sticky top-0 z-20">

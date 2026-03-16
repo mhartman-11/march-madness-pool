@@ -170,3 +170,63 @@ body {
 .float-anim {
   animation: float 2s ease-in-out infinite;
 }
+
+/* === Draft-Specific Styles === */
+
+/* On the clock: blinking gold border */
+@keyframes clockPulse {
+  0%, 100% { border-color: var(--retro-gold); box-shadow: 0 0 8px var(--retro-gold); }
+  50% { border-color: transparent; box-shadow: none; }
+}
+
+.on-the-clock {
+  animation: clockPulse 1.2s step-end infinite;
+}
+
+/* Your turn: pulsing background glow */
+@keyframes yourTurnPulse {
+  0%, 100% { background-color: rgba(245, 197, 66, 0.15); }
+  50% { background-color: rgba(245, 197, 66, 0.3); }
+}
+
+.your-turn {
+  animation: yourTurnPulse 1.5s ease-in-out infinite;
+}
+
+/* Gold text glow for headers */
+.glow-text {
+  text-shadow: 0 0 8px var(--retro-gold), 0 0 16px var(--retro-gold);
+}
+
+/* Draft cell base */
+.draft-cell {
+  transition: transform 0.1s;
+}
+
+.draft-cell:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+/* Retro input styling */
+.retro-input {
+  font-family: 'Press Start 2P', monospace;
+  -webkit-font-smoothing: none;
+}
+
+.retro-input::placeholder {
+  color: var(--retro-gray);
+  opacity: 0.5;
+}
+
+/* Custom scrollbar for draft panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(10, 10, 42, 0.5);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--retro-border);
+  border-radius: 3px;
+}

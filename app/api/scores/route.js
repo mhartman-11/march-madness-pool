@@ -1,4 +1,5 @@
-import { owners, allPlayers } from "@/lib/draftData";
+import { owners as hardcodedOwners } from "@/lib/draftData";
+import { redis } from "@/lib/redis";
 
 const SCOREBOARD_URL =
   "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard";
@@ -60,8 +61,29 @@ function buildNameVariants(name) {
   return variants;
 }
 
+// --- Get owners from Redis (draft rosters) or fall back to hardcoded data ---
+async function getOwners() {
+  if (!redis) return hardcodedOwners;
+  try {
+    const kvRosters = await redis.get("draft:rosters");
+    if (kvRosters) {
+      const parsed = typeof kvRosters === "string" ? JSON.parse(kvRosters) : kvRosters;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        console.log("[scores] Using draft rosters from Redis");
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.log("[scores] Redis unavailable, using hardcoded draft data:", err.message);
+  }
+  return hardcodedOwners;
+}
+
 // Build a lookup map of normalized draft player names -> player info
-function buildDraftLookup() {
+function buildDraftLookup(owners) {
+  const allPlayers = owners.flatMap((owner) =>
+    owner.players.map((player) => ({ ...player, owner: owner.name }))
+  );
   const lookup = new Map();
   for (const player of allPlayers) {
     for (const variant of buildNameVariants(player.name)) {
@@ -71,9 +93,7 @@ function buildDraftLookup() {
   return lookup;
 }
 
-const draftLookup = buildDraftLookup();
-
-function matchPlayer(espnName) {
+function matchPlayer(espnName, draftLookup) {
   const espnVariants = buildNameVariants(espnName);
   for (const v of espnVariants) {
     if (draftLookup.has(v)) return draftLookup.get(v);
@@ -205,6 +225,10 @@ export async function GET() {
   }
 
   try {
+    // 0. Load owners (from Redis draft rosters or hardcoded fallback)
+    const owners = await getOwners();
+    const draftLookup = buildDraftLookup(owners);
+
     // 1. Fetch all tournament games
     const events = await fetchAllTournamentGames();
     console.log(`[scores] Found ${events.length} tournament events`);
@@ -252,7 +276,7 @@ export async function GET() {
     const playerAggregates = new Map(); // "ownerName|playerName" -> aggregated data
 
     for (const stat of allPlayerGameStats) {
-      const matched = matchPlayer(stat.espnName);
+      const matched = matchPlayer(stat.espnName, draftLookup);
       if (!matched) {
         unmatchedEspn.add(stat.espnName);
         continue;
