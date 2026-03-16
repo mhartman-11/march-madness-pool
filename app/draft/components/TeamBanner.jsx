@@ -43,14 +43,14 @@ export default function TeamBanner({ myTeam, currentTeam, picks, config }) {
       {/* Identity */}
       <div className="flex items-center justify-between mb-3">
         <div>
-          <p className="text-[7px] text-gray-400">YOU ARE</p>
-          <p className="text-[10px] sm:text-xs text-[#f5c542]">
+          <p className="text-xs text-gray-400">YOU ARE</p>
+          <p className="text-sm sm:text-base text-[#f5c542]">
             {myTeam.name?.toUpperCase()}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[7px] text-gray-400">DRAFT POS</p>
-          <p className="text-[10px] text-[#00bcd4]">#{myTeam.draftPosition}</p>
+          <p className="text-xs text-gray-400">DRAFT POS</p>
+          <p className="text-sm text-[#00bcd4]">#{myTeam.draftPosition}</p>
         </div>
       </div>
 
@@ -65,15 +65,15 @@ export default function TeamBanner({ myTeam, currentTeam, picks, config }) {
         >
           {isMyTurn ? (
             <>
-              <p className="text-[10px] sm:text-xs text-[#f5c542] font-bold animate-pulse">
+              <p className="text-sm sm:text-base text-[#f5c542] font-bold animate-pulse">
                 YOUR TURN! MAKE YOUR PICK!
               </p>
-              <p className="text-[7px] text-[#f5c542]/70 mt-1">
+              <p className="text-xs text-[#f5c542]/70 mt-1">
                 SELECT A PLAYER BELOW
               </p>
             </>
           ) : (
-            <p className="text-[9px] text-gray-400">
+            <p className="text-xs text-gray-400">
               WAITING FOR {currentTeam?.name?.toUpperCase() || "..."}
             </p>
           )}
@@ -83,16 +83,16 @@ export default function TeamBanner({ myTeam, currentTeam, picks, config }) {
       {/* My Drafted Players */}
       {myPicks.length > 0 && (
         <div>
-          <p className="text-[8px] text-[#00bcd4] mb-2">
+          <p className="text-xs text-[#00bcd4] mb-2">
             YOUR ROSTER ({myPicks.length}/10)
           </p>
           <div className="space-y-1">
             {myPicks.map((p) => (
               <div
                 key={p.pickNumber}
-                className="flex items-center justify-between text-[8px] p-1 bg-[#0a0a2a] rounded"
+                className="flex items-center justify-between text-xs p-1 bg-[#0a0a2a] rounded"
               >
-                <span className="text-gray-400 w-6">R{p.round}</span>
+                <span className="text-gray-400 w-8">R{p.round}</span>
                 <span className="text-[#e8d5a3] flex-1">{p.playerName}</span>
                 <span className="text-gray-400">{p.playerTeam}</span>
                 {p.isAutoPick && (

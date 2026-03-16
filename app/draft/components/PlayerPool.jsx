@@ -90,7 +90,7 @@ export default function PlayerPool({ canPick, token, onPickMade }) {
 
   return (
     <div className="retro-panel p-2 sm:p-4 mb-4">
-      <h2 className="text-[9px] sm:text-[10px] text-[#00bcd4] mb-3">
+      <h2 className="text-xs sm:text-sm text-[#00bcd4] mb-3">
         AVAILABLE PLAYERS
         <span className="text-gray-400 ml-2">({total})</span>
       </h2>
@@ -102,12 +102,12 @@ export default function PlayerPool({ canPick, token, onPickMade }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="SEARCH NAME/TEAM..."
-          className="retro-input flex-1 p-2 text-[8px] sm:text-[9px] bg-[#0a0a2a] border-2 border-[#1a1a4a] text-[#e8d5a3] rounded focus:border-[#f5c542] outline-none font-['Press_Start_2P']"
+          className="retro-input flex-1 p-2 text-xs bg-[#0a0a2a] border-2 border-[#1a1a4a] text-[#e8d5a3] rounded focus:border-[#f5c542] outline-none font-['Press_Start_2P']"
         />
         <select
           value={teamFilter}
           onChange={(e) => setTeamFilter(e.target.value)}
-          className="retro-input p-2 text-[7px] sm:text-[8px] bg-[#0a0a2a] border-2 border-[#1a1a4a] text-[#e8d5a3] rounded focus:border-[#f5c542] outline-none font-['Press_Start_2P']"
+          className="retro-input p-2 text-[10px] sm:text-xs bg-[#0a0a2a] border-2 border-[#1a1a4a] text-[#e8d5a3] rounded focus:border-[#f5c542] outline-none font-['Press_Start_2P']"
         >
           <option value="">ALL TEAMS</option>
           {teams.map((t) => (
@@ -129,7 +129,7 @@ export default function PlayerPool({ canPick, token, onPickMade }) {
           <button
             key={pos.value}
             onClick={() => setPosFilter(pos.value)}
-            className={`px-2 py-1 text-[7px] sm:text-[8px] rounded transition-colors ${
+            className={`px-3 py-1 text-xs rounded transition-colors ${
               posFilter === pos.value
                 ? "bg-[#f5c542] text-[#0a0a2a]"
                 : "bg-[#0a0a2a] text-gray-400 hover:text-[#e8d5a3]"
@@ -141,13 +141,13 @@ export default function PlayerPool({ canPick, token, onPickMade }) {
       </div>
 
       {error && (
-        <p className="text-[8px] text-red-400 mb-2">ERROR: {error}</p>
+        <p className="text-xs text-red-400 mb-2">ERROR: {error}</p>
       )}
 
       {/* Player List */}
-      <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+      <div className="max-h-[500px] overflow-y-auto custom-scrollbar">
         {/* Table Header */}
-        <div className="grid grid-cols-[1fr_70px_30px_35px_60px] sm:grid-cols-[1fr_110px_55px_35px_40px_50px_65px] gap-1 p-1 text-[7px] text-[#00bcd4] border-b border-[#1a1a4a] sticky top-0 bg-[#12123a]">
+        <div className="grid grid-cols-[1fr_80px_35px_40px_65px] sm:grid-cols-[1fr_130px_60px_40px_50px_60px_70px] gap-1 p-2 text-[10px] sm:text-xs text-[#00bcd4] border-b border-[#1a1a4a] sticky top-0 bg-[#12123a]">
           <span>NAME</span>
           <span>TEAM</span>
           <span className="hidden sm:block">POS</span>
@@ -161,26 +161,26 @@ export default function PlayerPool({ canPick, token, onPickMade }) {
 
         {loading ? (
           <div className="text-center p-4">
-            <span className="text-[8px] text-gray-400 animate-pulse">
+            <span className="text-xs text-gray-400 animate-pulse">
               LOADING...
             </span>
           </div>
         ) : players.length === 0 ? (
           <div className="text-center p-4">
-            <span className="text-[8px] text-gray-400">NO PLAYERS FOUND</span>
+            <span className="text-xs text-gray-400">NO PLAYERS FOUND</span>
           </div>
         ) : (
           players.map((player) => (
             <div
               key={player.id}
-              className={`grid grid-cols-[1fr_70px_30px_35px_60px] sm:grid-cols-[1fr_110px_55px_35px_40px_50px_65px] gap-1 p-1 text-[7px] sm:text-[8px] border-b border-[#0a0a2a] hover:bg-[#1a1a3a] transition-colors items-center ${
+              className={`grid grid-cols-[1fr_80px_35px_40px_65px] sm:grid-cols-[1fr_130px_60px_40px_50px_60px_70px] gap-1 p-2 text-[10px] sm:text-xs border-b border-[#0a0a2a] hover:bg-[#1a1a3a] transition-colors items-center ${
                 player.injuryStatus ? "opacity-80" : ""
               }`}
             >
               <span className="text-[#e8d5a3] truncate">
                 {player.name}
                 {player.injuryStatus && (
-                  <span className="sm:hidden text-red-400 ml-1 text-[6px]">
+                  <span className="sm:hidden text-red-400 ml-1 text-[8px]">
                     [{player.injuryStatus}]
                   </span>
                 )}
@@ -191,10 +191,10 @@ export default function PlayerPool({ canPick, token, onPickMade }) {
               </span>
               <span className="text-[#00bcd4]">#{player.seed}</span>
               <span className="text-[#f5c542]">
-                {player.ppg ? player.ppg.toFixed(1) : "—"}
+                {player.ppg != null ? player.ppg.toFixed(1) : "—"}
               </span>
               <span
-                className={`hidden sm:block text-[6px] truncate ${
+                className={`hidden sm:block text-[10px] truncate ${
                   player.injuryStatus ? "text-red-400" : "text-green-400"
                 }`}
               >
@@ -205,7 +205,7 @@ export default function PlayerPool({ canPick, token, onPickMade }) {
                   <button
                     onClick={() => setConfirmPlayer(player)}
                     disabled={picking}
-                    className="px-2 py-1 text-[6px] sm:text-[7px] bg-green-700 text-white rounded hover:bg-green-500 transition-colors disabled:opacity-50"
+                    className="px-2 py-1 text-[10px] sm:text-xs bg-green-700 text-white rounded hover:bg-green-500 transition-colors disabled:opacity-50"
                   >
                     DRAFT
                   </button>
@@ -222,15 +222,15 @@ export default function PlayerPool({ canPick, token, onPickMade }) {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="text-[8px] text-gray-400 hover:text-[#f5c542] disabled:opacity-30"
+            className="text-xs text-gray-400 hover:text-[#f5c542] disabled:opacity-30"
           >
             &lt;&lt; PREV
           </button>
-          <span className="text-[8px] text-gray-400">PAGE {page}</span>
+          <span className="text-xs text-gray-400">PAGE {page}</span>
           <button
             onClick={() => setPage((p) => p + 1)}
             disabled={!hasMore}
-            className="text-[8px] text-gray-400 hover:text-[#f5c542] disabled:opacity-30"
+            className="text-xs text-gray-400 hover:text-[#f5c542] disabled:opacity-30"
           >
             NEXT &gt;&gt;
           </button>
@@ -241,19 +241,19 @@ export default function PlayerPool({ canPick, token, onPickMade }) {
       {confirmPlayer && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="retro-panel p-4 sm:p-6 max-w-sm w-full text-center">
-            <p className="text-[9px] text-gray-400 mb-3">CONFIRM SELECTION</p>
-            <p className="text-xs sm:text-sm text-[#f5c542] mb-1">
+            <p className="text-xs text-gray-400 mb-3">CONFIRM SELECTION</p>
+            <p className="text-sm sm:text-base text-[#f5c542] mb-1">
               {confirmPlayer.name}
             </p>
-            <p className="text-[9px] text-gray-400 mb-1">
+            <p className="text-xs text-gray-400 mb-1">
               {confirmPlayer.team} &bull; {confirmPlayer.position}
             </p>
-            <p className="text-[8px] text-gray-400 mb-1">
+            <p className="text-xs text-gray-400 mb-1">
               #{confirmPlayer.seed} SEED &bull;{" "}
-              {confirmPlayer.ppg ? `${confirmPlayer.ppg.toFixed(1)} PPG` : "— PPG"}
+              {confirmPlayer.ppg != null ? `${confirmPlayer.ppg.toFixed(1)} PPG` : "— PPG"}
             </p>
             {confirmPlayer.injuryStatus && (
-              <p className="text-[8px] text-red-400 mb-1">
+              <p className="text-xs text-red-400 mb-1">
                 {confirmPlayer.injuryStatus}
                 {confirmPlayer.injuryDesc ? ` — ${confirmPlayer.injuryDesc}` : ""}
               </p>
@@ -264,14 +264,14 @@ export default function PlayerPool({ canPick, token, onPickMade }) {
               <button
                 onClick={() => handleDraft(confirmPlayer)}
                 disabled={picking}
-                className="pixel-btn px-4 py-2 text-[9px] bg-green-700 hover:bg-green-500 text-white transition-colors disabled:opacity-50"
+                className="pixel-btn px-4 py-2 text-xs bg-green-700 hover:bg-green-500 text-white transition-colors disabled:opacity-50"
               >
                 {picking ? "DRAFTING..." : "CONFIRM"}
               </button>
               <button
                 onClick={() => setConfirmPlayer(null)}
                 disabled={picking}
-                className="pixel-btn px-4 py-2 text-[9px] hover:bg-red-500 hover:text-white transition-colors"
+                className="pixel-btn px-4 py-2 text-xs hover:bg-red-500 hover:text-white transition-colors"
               >
                 CANCEL
               </button>

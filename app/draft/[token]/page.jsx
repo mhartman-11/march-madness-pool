@@ -106,7 +106,7 @@ export default function TeamDraftPage() {
     return (
       <div className="min-h-screen bg-[#0a0a2a] flex items-center justify-center font-['Press_Start_2P']">
         <RetroBackground />
-        <p className="text-[#f5c542] text-xs animate-pulse relative z-10">
+        <p className="text-[#f5c542] text-sm animate-pulse relative z-10">
           LOADING DRAFT...
         </p>
       </div>
@@ -119,13 +119,13 @@ export default function TeamDraftPage() {
       <div className="min-h-screen bg-[#0a0a2a] flex items-center justify-center font-['Press_Start_2P']">
         <RetroBackground />
         <div className="retro-panel p-6 text-center relative z-10 max-w-md">
-          <p className="text-sm text-red-400 mb-3">ACCESS DENIED</p>
-          <p className="text-[8px] text-gray-400 mb-4">
+          <p className="text-base text-red-400 mb-3">ACCESS DENIED</p>
+          <p className="text-xs text-gray-400 mb-4">
             INVALID DRAFT TOKEN. CHECK YOUR LINK.
           </p>
           <a
             href="/draft"
-            className="text-[8px] text-[#f5c542] hover:underline"
+            className="text-xs text-[#f5c542] hover:underline"
           >
             VIEW PUBLIC DRAFT BOARD &gt;&gt;
           </a>
@@ -151,14 +151,14 @@ export default function TeamDraftPage() {
       <div className="relative z-10 max-w-6xl mx-auto p-2 sm:p-4">
         {/* Title */}
         <div className="text-center mb-4 pt-4">
-          <h1 className="text-sm sm:text-base text-[#f5c542] mb-1 glow-text">
+          <h1 className="text-base sm:text-lg text-[#f5c542] mb-1 glow-text">
             MARCH MADNESS DRAFT
           </h1>
-          <p className="text-[7px] sm:text-[8px] text-gray-400">
+          <p className="text-xs text-gray-400">
             SNAKE DRAFT &bull; 12 TEAMS &bull; 10 ROUNDS
           </p>
           {lastUpdated && (
-            <p className="text-[6px] text-gray-500 mt-1">
+            <p className="text-[10px] text-gray-500 mt-1">
               LAST UPDATE: {lastUpdated.toLocaleTimeString()}
               <span className="blink ml-1">_</span>
             </p>
@@ -167,23 +167,23 @@ export default function TeamDraftPage() {
 
         {isOffline && (
           <div className="retro-panel p-3 mb-4 border-orange-500 border text-center animate-pulse">
-            <p className="text-[8px] text-orange-400">CONNECTION LOST — WAITING TO RECONNECT...</p>
+            <p className="text-xs text-orange-400">CONNECTION LOST — WAITING TO RECONNECT...</p>
           </div>
         )}
 
         {error && !isOffline && (
           <div className="retro-panel p-3 mb-4 border-red-500 border text-center">
-            <p className="text-[8px] text-red-400">ERROR: {error}</p>
+            <p className="text-xs text-red-400">ERROR: {error}</p>
           </div>
         )}
 
         {/* Not Setup */}
         {config.status === "not_setup" && (
           <div className="retro-panel p-6 text-center">
-            <p className="text-[10px] text-gray-400 mb-2">
+            <p className="text-sm text-gray-400 mb-2">
               DRAFT NOT YET CONFIGURED
             </p>
-            <p className="text-[8px] text-gray-500">
+            <p className="text-xs text-gray-500">
               CHECK BACK WHEN THE ADMIN SETS UP THE DRAFT
             </p>
           </div>
@@ -228,7 +228,7 @@ export default function TeamDraftPage() {
             {/* Recent Picks */}
             {picks.length > 0 && (
               <div className="retro-panel p-3 sm:p-4 mb-4">
-                <h2 className="text-[9px] sm:text-[10px] text-[#00bcd4] mb-3">
+                <h2 className="text-xs sm:text-sm text-[#00bcd4] mb-3">
                   RECENT PICKS
                 </h2>
                 <div className="space-y-1 max-h-[200px] overflow-y-auto custom-scrollbar">
@@ -238,7 +238,7 @@ export default function TeamDraftPage() {
                     .map((p) => (
                       <div
                         key={p.pickNumber}
-                        className={`flex items-center gap-2 text-[7px] sm:text-[8px] p-1 rounded ${
+                        className={`flex items-center gap-2 text-[10px] sm:text-xs p-1 rounded ${
                           p.teamToken === token
                             ? "bg-[#f5c542]/10 border border-[#f5c542]/20"
                             : "bg-[#0a0a2a]"
@@ -274,13 +274,13 @@ export default function TeamDraftPage() {
         <div className="text-center mt-6 pb-8 space-y-2">
           <a
             href="/draft"
-            className="text-[8px] text-gray-400 hover:text-[#f5c542] transition-colors block"
+            className="text-xs text-gray-400 hover:text-[#f5c542] transition-colors block"
           >
             VIEW PUBLIC DRAFT BOARD &gt;&gt;
           </a>
           <a
             href="/"
-            className="text-[8px] text-gray-400 hover:text-[#f5c542] transition-colors block"
+            className="text-xs text-gray-400 hover:text-[#f5c542] transition-colors block"
           >
             &lt;&lt; BACK TO STANDINGS
           </a>

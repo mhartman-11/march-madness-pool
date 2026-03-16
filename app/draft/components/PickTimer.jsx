@@ -46,11 +46,11 @@ export default function PickTimer({ deadline, status }) {
 
   return (
     <div className="retro-panel p-2 sm:p-3 mb-4 text-center">
-      <p className="text-[7px] sm:text-[8px] text-gray-400 mb-1">
+      <p className="text-xs text-gray-400 mb-1">
         {status === "completed" ? "DRAFT CLOSED" : "DRAFT CLOSES IN"}
       </p>
       <p
-        className={`text-[10px] sm:text-xs font-bold ${
+        className={`text-sm sm:text-base font-bold ${
           urgent ? "text-red-400 animate-pulse" : "text-[#00bcd4]"
         }`}
       >
