@@ -67,15 +67,14 @@ export default function DraftBoard({ order, picks, config, myTeam }) {
 
               {/* Cells for each team in this round */}
               {Array.from({ length: TOTAL_TEAMS }, (_, colIdx) => {
-                // Snake order: even rounds are reversed
-                const teamIndex = isReversed
-                  ? TOTAL_TEAMS - 1 - colIdx
-                  : colIdx;
-                const pick = getPickForCell(round, teamIndex);
-                const pickNum = (round - 1) * TOTAL_TEAMS + colIdx + 1;
+                // Each column always maps to the same team (matching the header)
+                // Snake order only affects the pick NUMBER within that round
+                const pick = getPickForCell(round, colIdx);
+                const posInRound = isReversed ? (TOTAL_TEAMS - 1 - colIdx) : colIdx;
+                const pickNum = (round - 1) * TOTAL_TEAMS + posInRound + 1;
                 const isCurrentPick = status === "active" && pickNum === currentPick;
                 const isMyCell =
-                  myTeam && order[teamIndex]?.token === myTeam.token;
+                  myTeam && order[colIdx]?.token === myTeam.token;
 
                 return (
                   <div
