@@ -30,6 +30,14 @@ export default function AdminDashboard() {
       setStatus(data.config?.status || "not_setup");
       if (data.order?.length > 0) {
         setDraftOrder(data.order);
+        // Build team links from order data so they persist across page loads
+        const host = window.location.host;
+        const protocol = window.location.protocol;
+        setTeams(data.order.map(t => ({
+          name: t.name,
+          token: t.token,
+          link: `${protocol}//${host}/draft/${t.token}`,
+        })));
       }
       if (data.config?.currentPick) {
         setPlayerCount(data.picks?.length || 0);
