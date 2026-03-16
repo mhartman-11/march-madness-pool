@@ -41,20 +41,12 @@ export async function POST(request) {
       return Response.json({ error: "This player has already been drafted." }, { status: 409 });
     }
 
-    // Find the player in the pool
-    const allPlayers = await redis.zrange("draft:players", 0, -1);
-    let selectedPlayer = null;
-    for (const memberRaw of allPlayers) {
-      const player = typeof memberRaw === "string" ? JSON.parse(memberRaw) : memberRaw;
-      if (player.id === playerId) {
-        selectedPlayer = player;
-        break;
-      }
-    }
-
-    if (!selectedPlayer) {
+    // Find the player by direct hash lookup (O(1) instead of scanning all players)
+    const playerRaw = await redis.hget("draft:players:byid", playerId);
+    if (!playerRaw) {
       return Response.json({ error: "Player not found in the draft pool." }, { status: 404 });
     }
+    const selectedPlayer = typeof playerRaw === "string" ? JSON.parse(playerRaw) : playerRaw;
 
     // Optimistic concurrency check: re-read currentPick to avoid race
     const freshConfig = await redis.hgetall("draft:config");
@@ -85,8 +77,9 @@ export async function POST(request) {
       isAutoPick: "false",
     });
 
-    // Update team's picks array
-    const existingPicks = teamData?.picks ? JSON.parse(teamData.picks) : [];
+    // Update team's picks array (Upstash may auto-parse JSON, so handle both)
+    const rawPicks = teamData?.picks;
+    const existingPicks = Array.isArray(rawPicks) ? rawPicks : rawPicks ? JSON.parse(rawPicks) : [];
     existingPicks.push(currentPick);
     pipe.hset(`draft:team:${token}`, { picks: JSON.stringify(existingPicks) });
 

@@ -49,6 +49,7 @@ export async function POST(request) {
     pipe.del("draft:order");
     pipe.del("draft:players");
     pipe.del("draft:players:picked");
+    pipe.del("draft:players:byid");
     for (let i = 1; i <= TOTAL_PICKS; i++) {
       pipe.del(`draft:pick:${i}`);
     }

@@ -15,9 +15,13 @@ async function getBestAvailable() {
   const pickedSet = new Set(pickedRaw);
 
   for (const memberRaw of allPlayers) {
-    const player = typeof memberRaw === "string" ? JSON.parse(memberRaw) : memberRaw;
-    if (!pickedSet.has(player.id)) {
-      return player;
+    try {
+      const player = typeof memberRaw === "string" ? JSON.parse(memberRaw) : memberRaw;
+      if (player && !pickedSet.has(player.id)) {
+        return player;
+      }
+    } catch (e) {
+      continue;
     }
   }
   return null;
@@ -56,8 +60,9 @@ async function makeAutoPick(currentPick, draftOrder) {
     isAutoPick: "true",
   });
 
-  // Update team's picks array
-  const existingPicks = teamData?.picks ? JSON.parse(teamData.picks) : [];
+  // Update team's picks array (Upstash may auto-parse JSON, so handle both)
+  const rawPicks = teamData?.picks;
+  const existingPicks = Array.isArray(rawPicks) ? rawPicks : rawPicks ? JSON.parse(rawPicks) : [];
   existingPicks.push(currentPick);
   pipe.hset(`draft:team:${teamToken}`, { picks: JSON.stringify(existingPicks) });
 

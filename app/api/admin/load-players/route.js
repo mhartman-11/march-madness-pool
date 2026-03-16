@@ -64,16 +64,21 @@ export async function POST(request) {
     }
 
     // Clear existing player data
-    await redis.del("draft:players", "draft:players:picked");
+    await redis.del("draft:players", "draft:players:picked", "draft:players:byid");
 
     // Store players in a sorted set (score = rankScore, member = JSON string)
+    // Also store in a hash for O(1) lookup by player ID
     const pipe = redis.pipeline();
+    const byIdMap = {};
     for (const player of players) {
+      const json = JSON.stringify(player);
       pipe.zadd("draft:players", {
         score: player.rankScore,
-        member: JSON.stringify(player),
+        member: json,
       });
+      byIdMap[player.id] = json;
     }
+    pipe.hset("draft:players:byid", byIdMap);
 
     // Update config status
     pipe.hset("draft:config", { status: "ready" });

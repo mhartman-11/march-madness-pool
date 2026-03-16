@@ -21,7 +21,13 @@ export async function GET(request) {
     // Parse, filter out picked, and apply search/filters
     let available = [];
     for (const memberRaw of allPlayersRaw) {
-      const player = typeof memberRaw === "string" ? JSON.parse(memberRaw) : memberRaw;
+      let player;
+      try {
+        player = typeof memberRaw === "string" ? JSON.parse(memberRaw) : memberRaw;
+      } catch (e) {
+        continue;
+      }
+      if (!player) continue;
 
       // Skip already drafted
       if (pickedSet.has(player.id)) continue;
@@ -54,8 +60,13 @@ export async function GET(request) {
     // Get unique teams for filter dropdown
     const allTeams = new Set();
     for (const memberRaw of allPlayersRaw) {
-      const player = typeof memberRaw === "string" ? JSON.parse(memberRaw) : memberRaw;
-      if (!pickedSet.has(player.id)) {
+      let player;
+      try {
+        player = typeof memberRaw === "string" ? JSON.parse(memberRaw) : memberRaw;
+      } catch (e) {
+        continue;
+      }
+      if (player && !pickedSet.has(player.id)) {
         allTeams.add(player.team);
       }
     }
