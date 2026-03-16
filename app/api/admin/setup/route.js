@@ -44,8 +44,14 @@ export async function POST(request) {
       token: generateToken(),
     }));
 
-    // Write draft config
+    // Clear all stale draft data
     const pipe = redis.pipeline();
+    pipe.del("draft:order");
+    pipe.del("draft:players");
+    pipe.del("draft:players:picked");
+    for (let i = 1; i <= TOTAL_PICKS; i++) {
+      pipe.del(`draft:pick:${i}`);
+    }
 
     pipe.hset("draft:config", {
       status: "setup",

@@ -57,6 +57,7 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setTeams(data.teams);
+      setDraftOrder([]);
       setMessage("Draft setup complete! Team links generated.");
       setStatus("setup");
     } catch (e) {
@@ -101,7 +102,7 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setDraftOrder(data.draftOrder);
-      setMessage("Draft is LIVE! Order randomized.");
+      setMessage("Draft is LIVE! Fixed order set.");
       setStatus("active");
     } catch (e) {
       setError(e.message);
@@ -167,28 +168,28 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a2a] text-[#e8d5a3] font-['Press_Start_2P'] p-4">
+    <div className="min-h-screen bg-[#0a0a2a] text-[#e8d5a3] font-['Press_Start_2P'] p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="retro-panel p-4 mb-6 text-center">
-          <h1 className="text-sm sm:text-base text-[#f5c542] mb-2">
+        <div className="retro-panel p-5 mb-6 text-center">
+          <h1 className="text-base sm:text-lg text-[#f5c542] mb-2">
             ADMIN CONSOLE
           </h1>
-          <p className="text-[8px] text-gray-400">MARCH MADNESS DRAFT CONTROL</p>
+          <p className="text-xs text-gray-400">MARCH MADNESS DRAFT CONTROL</p>
         </div>
 
         {/* Status */}
         <div className="retro-panel p-4 mb-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <span className="text-[9px]">STATUS:</span>
-            <span className={`text-[9px] ${statusColors[status] || "text-gray-400"}`}>
+            <span className="text-xs sm:text-sm">STATUS:</span>
+            <span className={`text-xs sm:text-sm ${statusColors[status] || "text-gray-400"}`}>
               {(status || "LOADING...").toUpperCase()}
             </span>
           </div>
           {playerCount > 0 && (
             <div className="flex items-center justify-between mt-2">
-              <span className="text-[9px]">PLAYERS LOADED:</span>
-              <span className="text-[9px] text-green-400">{playerCount}</span>
+              <span className="text-xs">PLAYERS LOADED:</span>
+              <span className="text-xs text-green-400">{playerCount}</span>
             </div>
           )}
         </div>
@@ -196,12 +197,12 @@ export default function AdminDashboard() {
         {/* Messages */}
         {message && (
           <div className="retro-panel p-3 mb-4 border-green-500 border">
-            <p className="text-[8px] text-green-400">{message}</p>
+            <p className="text-xs text-green-400">{message}</p>
           </div>
         )}
         {error && (
           <div className="retro-panel p-3 mb-4 border-red-500 border">
-            <p className="text-[8px] text-red-400">ERROR: {error}</p>
+            <p className="text-xs text-red-400">ERROR: {error}</p>
           </div>
         )}
 
@@ -210,35 +211,35 @@ export default function AdminDashboard() {
           <button
             onClick={handleSetup}
             disabled={loading}
-            className="pixel-btn p-3 text-[9px] hover:bg-[#f5c542] hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
+            className="pixel-btn p-4 text-xs sm:text-sm hover:bg-[#f5c542] hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
           >
             {loading ? "..." : "1. SETUP DRAFT"}
           </button>
           <button
             onClick={handleLoadPlayers}
             disabled={loading || status === "not_setup"}
-            className="pixel-btn p-3 text-[9px] hover:bg-[#00bcd4] hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
+            className="pixel-btn p-4 text-xs sm:text-sm hover:bg-[#00bcd4] hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
           >
             {loading ? "..." : "2. LOAD PLAYERS"}
           </button>
           <button
             onClick={handleStartDraft}
             disabled={loading || (status !== "ready" && status !== "setup")}
-            className="pixel-btn p-3 text-[9px] hover:bg-green-400 hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
+            className="pixel-btn p-4 text-xs sm:text-sm hover:bg-green-400 hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
           >
             {loading ? "..." : "3. START DRAFT"}
           </button>
           <button
             onClick={handleAutoPick}
             disabled={loading || status !== "active"}
-            className="pixel-btn p-3 text-[9px] hover:bg-orange-400 hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
+            className="pixel-btn p-4 text-xs sm:text-sm hover:bg-orange-400 hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
           >
             {loading ? "..." : "AUTO-PICK CURRENT"}
           </button>
           <button
             onClick={handleAutoFillAll}
             disabled={loading || status !== "active"}
-            className="pixel-btn p-3 text-[9px] col-span-1 sm:col-span-2 hover:bg-red-400 hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
+            className="pixel-btn p-4 text-xs sm:text-sm col-span-1 sm:col-span-2 hover:bg-red-400 hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
           >
             {loading ? "..." : "AUTO-FILL ALL REMAINING"}
           </button>
@@ -247,8 +248,8 @@ export default function AdminDashboard() {
         {/* Team Links */}
         {teams.length > 0 && (
           <div className="retro-panel p-4 mb-6">
-            <h2 className="text-[10px] text-[#00bcd4] mb-3">TEAM DRAFT LINKS</h2>
-            <p className="text-[7px] text-gray-400 mb-3">
+            <h2 className="text-sm text-[#00bcd4] mb-3">TEAM DRAFT LINKS</h2>
+            <p className="text-xs text-gray-400 mb-3">
               Share each link with the corresponding owner
             </p>
             <div className="space-y-2">
@@ -257,15 +258,15 @@ export default function AdminDashboard() {
                   key={t.token}
                   className="flex items-center justify-between gap-2 p-2 bg-[#0a0a2a] rounded"
                 >
-                  <span className="text-[8px] text-[#f5c542] min-w-[80px]">
+                  <span className="text-xs text-[#f5c542] min-w-[100px]">
                     {t.name}
                   </span>
-                  <span className="text-[7px] text-gray-400 truncate flex-1 hidden sm:block">
+                  <span className="text-[10px] text-gray-400 truncate flex-1 hidden sm:block">
                     {t.link}
                   </span>
                   <button
                     onClick={() => copyLink(t.link)}
-                    className="pixel-btn px-2 py-1 text-[7px] whitespace-nowrap"
+                    className="pixel-btn px-3 py-1 text-xs whitespace-nowrap"
                   >
                     {copied === t.link ? "COPIED!" : "COPY"}
                   </button>
@@ -278,17 +279,17 @@ export default function AdminDashboard() {
         {/* Draft Order */}
         {draftOrder.length > 0 && (
           <div className="retro-panel p-4 mb-6">
-            <h2 className="text-[10px] text-[#00bcd4] mb-3">DRAFT ORDER</h2>
+            <h2 className="text-sm text-[#00bcd4] mb-3">DRAFT ORDER</h2>
             <div className="space-y-1">
               {draftOrder.map((t, i) => (
                 <div
                   key={t.token || i}
                   className="flex items-center gap-3 p-1"
                 >
-                  <span className="text-[9px] text-gray-400 w-6">
+                  <span className="text-xs text-gray-400 w-8">
                     {i + 1}.
                   </span>
-                  <span className="text-[9px] text-[#e8d5a3]">
+                  <span className="text-xs text-[#e8d5a3]">
                     {t.name}
                   </span>
                 </div>
@@ -301,14 +302,14 @@ export default function AdminDashboard() {
         <div className="text-center space-y-2">
           <a
             href="/draft"
-            className="pixel-btn inline-block px-4 py-2 text-[9px] hover:bg-[#f5c542] hover:text-[#0a0a2a] transition-colors"
+            className="pixel-btn inline-block px-4 py-2 text-xs hover:bg-[#f5c542] hover:text-[#0a0a2a] transition-colors"
           >
             VIEW DRAFT BOARD &gt;&gt;
           </a>
           <br />
           <a
             href="/"
-            className="text-[8px] text-gray-400 hover:text-[#f5c542] transition-colors"
+            className="text-xs text-gray-400 hover:text-[#f5c542] transition-colors"
           >
             &lt;&lt; BACK TO STANDINGS
           </a>
