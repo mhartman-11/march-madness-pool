@@ -34,8 +34,8 @@ export async function POST(request) {
       return Response.json({ error: "No players loaded. Load players first." }, { status: 400 });
     }
 
-    // Randomize draft order
-    const shuffledTeams = shuffleArray(teams);
+    // Use fixed draft order (as provided during setup)
+    const shuffledTeams = teams;
 
     // Write draft order and update team positions
     const pipe = redis.pipeline();
