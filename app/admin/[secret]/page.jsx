@@ -49,8 +49,8 @@ export default function AdminDashboard() {
         headers,
         body: JSON.stringify({
           teams: [
-            "McDaniel", "Schutt", "Jeremy", "Wojo", "Blake",
-            "Lee", "Zach", "Koehler", "Webb", "Myers", "Kevin",
+            "Lee", "Wojo", "Koehler", "Webb", "Sam", "Kevin",
+            "McPeppers", "Jeremy", "Blake", "Hartman", "Zach", "Schutt",
           ],
         }),
       });
