@@ -13,16 +13,15 @@ const RESPONSE_CACHE_TTL = 30_000; // 30 seconds
 // Cache individual completed game box scores permanently (they won't change)
 const gameBoxScoreCache = new Map();
 
-// Tournament dates for the 2026 NCAA Tournament
+// Tournament dates for the 2026 NCAA Tournament (excluding First Four)
 const TOURNAMENT_DATES = [
-  "20260317", "20260318", "20260319", "20260320",
+  "20260319", "20260320",
   "20260321", "20260322", "20260327", "20260328",
   "20260329", "20260330", "20260404", "20260406",
 ];
 
 // Round labels by date
 const DATE_TO_ROUND = {
-  "2026-03-17": "First Four", "2026-03-18": "First Four",
   "2026-03-19": "Round of 64", "2026-03-20": "Round of 64",
   "2026-03-21": "Round of 32", "2026-03-22": "Round of 32",
   "2026-03-27": "Sweet 16", "2026-03-28": "Sweet 16",
