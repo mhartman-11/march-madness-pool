@@ -192,6 +192,23 @@ function extractPlayerStats(boxScoreData, event) {
   return players;
 }
 
+// --- Check if a box score has real player stats (not an empty/in-progress fetch) ---
+function hasPlayerStats(boxScoreData) {
+  const bsPlayers = boxScoreData?.boxscore?.players || [];
+  for (const teamData of bsPlayers) {
+    const stats = teamData.statistics?.[0];
+    if (!stats) continue;
+    for (const athlete of stats.athletes || []) {
+      const rawStats = athlete.stats || [];
+      // If any athlete has a non-zero PTS value, the box score is real
+      if (rawStats.length > 1 && rawStats[1] && rawStats[1] !== "0" && rawStats[1] !== "--") {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // --- Determine eliminated teams (teams that lost and tournament is ongoing) ---
 function getEliminatedTeams(events) {
   const eliminated = new Set();
@@ -248,8 +265,8 @@ export async function GET() {
         batch.map(async (event) => {
           const boxScore = await fetchBoxScore(event.id);
 
-          // Cache completed games permanently
-          if (event.status?.type?.completed) {
+          // Cache completed games permanently, but only if box score has real stats
+          if (event.status?.type?.completed && hasPlayerStats(boxScore)) {
             gameBoxScoreCache.set(event.id, boxScore);
           }
 
