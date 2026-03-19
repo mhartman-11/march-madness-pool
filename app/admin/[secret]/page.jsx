@@ -161,6 +161,26 @@ export default function AdminDashboard() {
     }
   }
 
+  async function handleImportRosters() {
+    setLoading(true);
+    setError("");
+    setMessage("");
+    try {
+      const res = await fetch("/api/admin/import-rosters", {
+        method: "POST",
+        headers,
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setMessage(data.message);
+      setStatus("completed");
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function copyLink(link) {
     navigator.clipboard.writeText(link);
     setCopied(link);
@@ -250,6 +270,13 @@ export default function AdminDashboard() {
             className="pixel-btn p-4 text-xs sm:text-sm col-span-1 sm:col-span-2 hover:bg-red-400 hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
           >
             {loading ? "..." : "AUTO-FILL ALL REMAINING"}
+          </button>
+          <button
+            onClick={handleImportRosters}
+            disabled={loading}
+            className="pixel-btn p-4 text-xs sm:text-sm col-span-1 sm:col-span-2 hover:bg-purple-400 hover:text-[#0a0a2a] transition-colors disabled:opacity-50"
+          >
+            {loading ? "..." : "IMPORT MANUAL ROSTERS"}
           </button>
         </div>
 

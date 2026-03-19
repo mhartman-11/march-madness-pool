@@ -13,22 +13,22 @@ const RESPONSE_CACHE_TTL = 30_000; // 30 seconds
 // Cache individual completed game box scores permanently (they won't change)
 const gameBoxScoreCache = new Map();
 
-// Tournament dates for the 2025 NCAA Tournament
+// Tournament dates for the 2026 NCAA Tournament
 const TOURNAMENT_DATES = [
-  "20250318", "20250319", "20250320", "20250321",
-  "20250322", "20250323", "20250327", "20250328",
-  "20250329", "20250330", "20250405", "20250407",
+  "20260317", "20260318", "20260319", "20260320",
+  "20260321", "20260322", "20260327", "20260328",
+  "20260329", "20260330", "20260404", "20260406",
 ];
 
 // Round labels by date
 const DATE_TO_ROUND = {
-  "2025-03-18": "First Four", "2025-03-19": "First Four",
-  "2025-03-20": "Round of 64", "2025-03-21": "Round of 64",
-  "2025-03-22": "Round of 32", "2025-03-23": "Round of 32",
-  "2025-03-27": "Sweet 16", "2025-03-28": "Sweet 16",
-  "2025-03-29": "Elite Eight", "2025-03-30": "Elite Eight",
-  "2025-04-05": "Final Four", "2025-04-06": "Final Four",
-  "2025-04-07": "Championship", "2025-04-08": "Championship",
+  "2026-03-17": "First Four", "2026-03-18": "First Four",
+  "2026-03-19": "Round of 64", "2026-03-20": "Round of 64",
+  "2026-03-21": "Round of 32", "2026-03-22": "Round of 32",
+  "2026-03-27": "Sweet 16", "2026-03-28": "Sweet 16",
+  "2026-03-29": "Elite Eight", "2026-03-30": "Elite Eight",
+  "2026-04-04": "Final Four",
+  "2026-04-06": "Championship",
 };
 
 function getRound(dateString) {
