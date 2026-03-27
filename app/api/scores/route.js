@@ -15,17 +15,19 @@ const gameBoxScoreCache = new Map();
 
 // Tournament dates for the 2026 NCAA Tournament (excluding First Four)
 const TOURNAMENT_DATES = [
-  "20260319", "20260320",
-  "20260321", "20260322", "20260327", "20260328",
-  "20260329", "20260330", "20260404", "20260406",
+  "20260319", "20260320",           // Round of 64 (Thu-Fri Mar 19-20)
+  "20260321", "20260322",           // Round of 32 (Sat-Sun Mar 21-22)
+  "20260326", "20260327",           // Sweet 16 (Thu-Fri Mar 26-27)
+  "20260328", "20260329",           // Elite Eight (Sat-Sun Mar 28-29)
+  "20260404", "20260406",           // Final Four (Sat Apr 4) & Championship (Mon Apr 6)
 ];
 
 // Round labels by date
 const DATE_TO_ROUND = {
   "2026-03-19": "Round of 64", "2026-03-20": "Round of 64",
   "2026-03-21": "Round of 32", "2026-03-22": "Round of 32",
-  "2026-03-27": "Sweet 16", "2026-03-28": "Sweet 16",
-  "2026-03-29": "Elite Eight", "2026-03-30": "Elite Eight",
+  "2026-03-26": "Sweet 16", "2026-03-27": "Sweet 16",
+  "2026-03-28": "Elite Eight", "2026-03-29": "Elite Eight",
   "2026-04-04": "Final Four",
   "2026-04-06": "Championship",
 };
@@ -111,7 +113,7 @@ async function fetchJSON(url) {
 async function fetchAllTournamentGames() {
   const results = await Promise.allSettled(
     TOURNAMENT_DATES.map((date) =>
-      fetchJSON(`${SCOREBOARD_URL}?seasontype=3&dates=${date}&limit=50`)
+      fetchJSON(`${SCOREBOARD_URL}?groups=100&seasontype=3&dates=${date}&limit=50`)
     )
   );
 
