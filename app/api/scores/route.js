@@ -111,7 +111,7 @@ async function fetchJSON(url) {
 async function fetchAllTournamentGames() {
   const results = await Promise.allSettled(
     TOURNAMENT_DATES.map((date) =>
-      fetchJSON(`${SCOREBOARD_URL}?groups=100&dates=${date}&limit=50`)
+      fetchJSON(`${SCOREBOARD_URL}?seasontype=3&dates=${date}&limit=50`)
     )
   );
 
