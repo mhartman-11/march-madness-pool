@@ -48,6 +48,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [selectedOwner, setSelectedOwner] = useState(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -93,6 +94,12 @@ export default function Home() {
 
   function switchTab(id) {
     setActiveTab(id);
+    sfxConfirm();
+  }
+
+  function selectOwner(name) {
+    setSelectedOwner(name);
+    setActiveTab("rosters");
     sfxConfirm();
   }
 
@@ -182,8 +189,8 @@ export default function Home() {
 
           {data?.owners && (
             <>
-              {activeTab === "standings" && <Standings owners={data.owners} />}
-              {activeTab === "rosters" && <Rosters owners={data.owners} />}
+              {activeTab === "standings" && <Standings owners={data.owners} onSelectOwner={selectOwner} />}
+              {activeTab === "rosters" && <Rosters owners={data.owners} selectedOwner={selectedOwner} onClearOwner={() => setSelectedOwner(null)} />}
               {activeTab === "gamelog" && <GameLog owners={data.owners} />}
             </>
           )}
@@ -216,7 +223,7 @@ function RankBadge({ rank }) {
 
 // ─── Tab 1: Standings ──────────────────────────────────────────
 
-function Standings({ owners }) {
+function Standings({ owners, onSelectOwner }) {
   return (
     <div className="retro-panel p-1 sm:p-2">
       <div className="text-xs sm:text-sm text-[var(--retro-gold)] px-3 py-2 border-b-2 border-[var(--retro-border)]">
@@ -241,7 +248,9 @@ function Standings({ owners }) {
             {owners.map((owner, idx) => (
               <tr
                 key={owner.name}
-                className={`retro-row ${
+                onClick={() => onSelectOwner(owner.name)}
+                onMouseEnter={sfxSelect}
+                className={`retro-row cursor-pointer hover:bg-[var(--retro-cyan)]/10 ${
                   idx === 0
                     ? "bg-[var(--retro-gold)]/10"
                     : idx === 1
@@ -288,7 +297,7 @@ function Standings({ owners }) {
 
 // ─── Tab 2: Team Rosters ───────────────────────────────────────
 
-function Rosters({ owners }) {
+function Rosters({ owners, selectedOwner, onClearOwner }) {
   const [expanded, setExpanded] = useState({});
 
   const toggle = (name) => {
@@ -296,9 +305,26 @@ function Rosters({ owners }) {
     setExpanded((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
+  const visibleOwners = selectedOwner
+    ? owners.filter((o) => o.name === selectedOwner)
+    : owners;
+
   return (
     <div className="space-y-3">
-      {owners.map((owner) => {
+      {selectedOwner && (
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] sm:text-xs text-[var(--retro-cyan)]">
+            &#9654; {selectedOwner.toUpperCase()}
+          </span>
+          <button
+            onClick={() => { sfxToggle(); onClearOwner(); }}
+            className="text-[8px] sm:text-[10px] text-[var(--retro-gray)] hover:text-[var(--retro-white)] pixel-btn px-2 py-1 border border-[var(--retro-border)]"
+          >
+            &#9664; ALL OWNERS
+          </button>
+        </div>
+      )}
+      {visibleOwners.map((owner) => {
         const isOpen = expanded[owner.name] !== false;
         return (
           <div key={owner.name} className="retro-panel overflow-hidden">
